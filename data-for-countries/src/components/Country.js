@@ -22,7 +22,7 @@ const Country = ({ country }) => {
                     <b>Temperature: </b> {weathers.current.temperature} Celcius
                 </div>
                 <div>
-                    <img src={weathers.current.weather_icons} alt={weathers.current.weather_descriptions[0]}></img>
+                    <img src={weathers.current.weather_icons}></img>
                 </div>
                 <div>
                     <b>Wind: </b> {weathers.current.wind_speed} kph direction {weathers.current.wind_dir}
