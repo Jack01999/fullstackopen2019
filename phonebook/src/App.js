@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import AddPerson from './components/AddPerson'
 import PersonService from './services/persons'
+import Notification from './components/Notification'
+import Error from './components/Error'
+import Footer from './components/Footer'
 
 const App = () => {
     const [persons, setPersons] = useState([]);
     const [newName, setNewName] = useState('');
     const [newNumber, setNewNumber] = useState('');
+    const [message, setMessage] = useState(null);
+    const [errorMessage, setErrorMessage] = useState(null);
 
     // Make call into the JSON file (db.json) and set the original "persons" list as whats provided in db.json
     useEffect(() => {
@@ -37,6 +42,12 @@ const App = () => {
                     .then(newNumber => {
                         setPersons(persons.map(person => person.id !== found.id ? person : newNumber))
                     });
+                setMessage(
+                    `${newName}'s number has been changed to ${newNumber}`
+                )
+                setTimeout(() => {
+                    setMessage(null)
+                }, 5000)
                 setNewName('');
                 setNewNumber('');
             }
@@ -52,6 +63,12 @@ const App = () => {
                     setNewName('');
                     setNewNumber('');
             })
+            setMessage(
+                `Added ${newName}`
+            )
+            setTimeout(() => {
+            setMessage(null)
+            }, 5000)
         }
     }
 
@@ -59,9 +76,25 @@ const App = () => {
     const handleDeleteChange = (person) => {
         if (window.confirm(`Delete ${person.name} (id: ${person.id}) ?`)) {
           PersonService
-            .deleteID(person.id);
-            setPersons(persons.filter(delPerson => delPerson.id !== person.id));
+            .deleteID(person.id)
+            .catch(error => {
+                setErrorMessage(
+                    `Information of ${person.name} has already been removed from the server`
+                )
+                setTimeout(() => {
+                    setErrorMessage(null)
+                }, 5000)
+                setPersons(persons.filter(p => p.id !== person.id))
+            })
+            setPersons(persons.filter(delPerson => delPerson.id !== person.id))
+            setErrorMessage(
+                `Information of ${person.name} has been removed from the server`
+            )
+            setTimeout(() => {
+                setErrorMessage(null)
+            }, 5000)
         }
+
       }
 
     // Get the update value inside the 'name' form/input. (re-renders)
@@ -83,10 +116,13 @@ const App = () => {
     return (
         <div>
             <h2>Phonebook</h2>
+            <Notification message={message} />
+            <Error message={errorMessage} />
             <h3>Add a new</h3>
                 <AddPerson newName={newName} newNumber={newNumber} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange} addName={addName} />
             <h3>Numbers</h3>
                 {phonebook()}
+            <Footer />
         </div>
     )
 }
