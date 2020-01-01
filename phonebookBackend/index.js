@@ -1,8 +1,13 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+var morgan = require('morgan');
 
 app.use(bodyParser.json());
+
+morgan.token('request-body', (req) => {
+    return JSON.stringify(req.body)
+})
 
 let persons = [
     {
@@ -27,8 +32,21 @@ let persons = [
     },
 ]
 
+app.use(morgan(function (tokens, req, res) {
+    return [
+        tokens.method(req, res),
+        tokens.url(req, res),
+        tokens.status(req, res),
+        tokens.res(req, res, 'content-length'),
+        '-',
+        tokens['response-time'](req, res),
+        'ms',
+        tokens['request-body'](req, res),
+    ].join(' ').concat('\n--------------')
+}))
+
 app.get('/', (request, response) => {
-    response.send('<h1>This is working</h1>');
+    response.send('Hello world');
 });
 
 app.get('/api/persons', (request, response) => {
