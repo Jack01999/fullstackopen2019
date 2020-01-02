@@ -10,7 +10,7 @@ if ( process.argv.length<3 ) {
   const url =
     `mongodb+srv://jackc099:${password}@reactcourse-3jqzj.mongodb.net/note-app?retryWrites=true&w=majority`
   
-  mongoose.connect(url, { useNewUrlParser: true })
+  mongoose.connect(url, { useUnifiedTopology: true, useNewUrlParser: true })
   
   const noteSchema = new mongoose.Schema({
     content: String,
@@ -21,14 +21,12 @@ if ( process.argv.length<3 ) {
   const Note = mongoose.model('Note', noteSchema)
   
   const note = new Note({
-    content: 'HTML is Easy',
+    content: 'Note 2 Test',
     date: new Date(),
     important: true,
   })
   
-  Note.find({}).then(result => {
-    result.forEach(note => {
-      console.log(note)
-    })
-    mongoose.connection.close()
+  note.save().then(result => {
+    console.log("Result saved");
+    mongoose.connection.close();
   })

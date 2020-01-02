@@ -10,7 +10,7 @@ const password = process.argv[2]
 const url =
   `mongodb+srv://jackc099:${password}@reactcourse-3jqzj.mongodb.net/phonebook-app?retryWrites=true&w=majority`
 
-mongoose.connect(url, { useNewUrlParser: true })
+mongoose.connect(url, { useUnifiedTopology: true, useNewUrlParser: true })
 
 const phonebookSchema = new mongoose.Schema({
   name: String,
